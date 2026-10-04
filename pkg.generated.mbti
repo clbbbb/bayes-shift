@@ -1,0 +1,686 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "local/bayes-shift"
+
+// Values
+pub fn add_normal_noise(NumericSeries, Double, Int) -> Result[NumericSeries, DetectError]
+
+pub fn add_series(NumericSeries, NumericSeries) -> Result[NumericSeries, DetectError]
+
+pub fn area_under_roc(Array[CurvePoint]) -> Result[Double, DetectError]
+
+pub fn audit_difference(Array[Double]) -> Result[SeriesAudit, DetectError]
+
+pub fn audit_run_length_capacity(Array[Update], Int) -> Result[RunLengthAudit, DetectError]
+
+pub fn audit_series(Array[Double]) -> SeriesAudit
+
+pub fn baseline_experiment_csv_header() -> String
+
+pub fn best_f1_point(Array[ThresholdPoint]) -> Result[ThresholdPoint, DetectError]
+
+pub fn boundary_delays(Array[Boundary], Array[Boundary], Int) -> Result[Array[BoundaryDelay], DetectError]
+
+pub fn clip_series(NumericSeries, Double, Double) -> Result[NumericSeries, DetectError]
+
+pub fn compare_default_detectors(NumericScenario, GaussianModel, Int) -> Result[Array[ComparisonRow], DetectError]
+
+pub fn concatenate_series(Array[NumericSeries]) -> Result[NumericSeries, DetectError]
+
+pub fn conservative_experiment_plan() -> ExperimentPlan
+
+pub fn contamination_mask(Int, Double, Int) -> Result[Array[Bool], DetectError]
+
+pub fn count_update_csv_header() -> String
+
+pub fn count_update_csv_row(CountUpdate) -> String
+
+pub fn cusum_boundaries(Array[CusumUpdate]) -> Array[Boundary]
+
+pub fn default_experiment_plan() -> ExperimentPlan
+
+pub fn detected_segments(Array[Update], Array[Boundary]) -> Result[Array[DetectedSegment], DetectError]
+
+pub fn detrend_linear(Array[Double]) -> Result[Array[Double], DetectError]
+
+pub fn diagnose_trace(Array[Update]) -> Result[TraceDiagnostics, DetectError]
+
+pub fn evaluate_count(CountScenario, PoissonModel, Double, Int, Double, Int) -> Result[CountExperiment, DetectError]
+
+pub fn evaluate_cusum(NumericScenario, CusumConfig, Int) -> Result[BaselineExperiment, DetectError]
+
+pub fn evaluate_ewma(NumericScenario, EwmaConfig, Int) -> Result[BaselineExperiment, DetectError]
+
+pub fn evaluate_hazards(NumericScenario, GaussianModel, Array[Double], Int, Array[Double], Int) -> Result[Array[HazardPoint], DetectError]
+
+pub fn evaluate_numeric(NumericScenario, GaussianModel, Double, Int, Double, Int) -> Result[NumericExperiment, DetectError]
+
+pub fn ewma_boundaries(Array[EwmaUpdate]) -> Array[Boundary]
+
+pub fn execute_default_plans(NumericScenario, GaussianModel) -> Result[Array[PlanResult], DetectError]
+
+pub fn execute_grid(Array[ExperimentPlan], NumericScenario, GaussianModel) -> Result[Array[PlanResult], DetectError]
+
+pub fn execute_plan(ExperimentPlan, NumericScenario, GaussianModel) -> Result[PlanResult, DetectError]
+
+pub fn experiment_csv_header() -> String
+
+pub fn experiment_csv_row(NumericExperiment) -> String
+
+pub fn first_crossing(Array[Update], Double) -> Update?
+
+pub fn format_baseline_experiment(BaselineExperiment) -> String
+
+pub fn format_count_update(CountUpdate) -> String
+
+pub fn format_diagnostics(TraceDiagnostics) -> String
+
+pub fn format_plan_result(PlanResult) -> String
+
+pub fn format_probability_histogram(ProbabilityHistogram, Int) -> Result[String, DetectError]
+
+pub fn format_score(Score) -> String
+
+pub fn format_update(Update) -> String
+
+pub fn gaussian_segments(Array[SegmentSpec], Double, Int) -> Result[NumericSeries, DetectError]
+
+pub fn huber_loss(Double, Double) -> Result[Double, DetectError]
+
+pub fn huber_weight(Double, Double) -> Result[Double, DetectError]
+
+pub fn inject_spikes(NumericSeries, Array[Int], Double) -> Result[NumericSeries, DetectError]
+
+pub fn inspect_values(Array[Double]) -> Quality
+
+pub fn interquartile_range(Array[Double]) -> Result[Double, DetectError]
+
+pub fn linear_ramp(Int, Double, Double) -> Result[NumericSeries, DetectError]
+
+pub fn log1mexp(Double) -> Result[Double, DetectError]
+
+pub fn log_factorial(Int) -> Result[Double, DetectError]
+
+pub fn log_gamma(Double) -> Result[Double, DetectError]
+
+pub fn log_sum_exp(Array[Double]) -> Result[Double, DetectError]
+
+pub fn mean(Array[Double]) -> Result[Double, DetectError]
+
+pub fn mean_absolute_delay(Array[BoundaryDelay]) -> Int?
+
+pub fn mean_change_probability(Array[Update]) -> Result[Double, DetectError]
+
+pub fn median(Array[Double]) -> Result[Double, DetectError]
+
+pub fn median_absolute_deviation(Array[Double]) -> Result[Double, DetectError]
+
+pub fn normal_noise(Int, Double, Double, Int) -> Result[Array[Double], DetectError]
+
+pub fn piecewise_constant(Array[Int], Array[Double], Double, Int) -> Result[Array[Double], DetectError]
+
+pub fn plan_grid(Array[Double], Array[Int], Array[Double], Int, Int) -> Result[Array[ExperimentPlan], DetectError]
+
+pub fn plan_result_csv_header() -> String
+
+pub fn point_at_precision(Array[ThresholdPoint], Double) -> Result[ThresholdPoint, DetectError]
+
+pub fn poisson_sample(Double, ParkMiller) -> Result[Int, DetectError]
+
+pub fn poisson_segments(Array[Int], Array[Double], Int) -> Result[Array[Int], DetectError]
+
+pub fn posterior_chart(Array[Double], Int) -> Result[String, DetectError]
+
+pub fn posterior_entropy(Array[Double]) -> Result[Double, DetectError]
+
+pub fn posterior_quantile(Array[Double], Double) -> Result[Int, DetectError]
+
+pub fn precision_recall_curve(Array[ThresholdPoint]) -> Array[CurvePoint]
+
+pub fn predicted_boundaries(Array[Update], Double) -> Result[Array[Boundary], DetectError]
+
+pub fn probability_bar(Double, Int) -> Result[String, DetectError]
+
+pub fn probability_histogram(Array[Update], Int) -> Result[ProbabilityHistogram, DetectError]
+
+pub fn quantile(Array[Double], Double) -> Result[Double, DetectError]
+
+pub fn rank_comparisons(Array[ComparisonRow]) -> Array[ComparisonRow]
+
+pub fn reproducibility_csv_header() -> String
+
+pub fn reproducibility_record(NumericScenario, ExperimentPlan) -> ReproducibilityRecord
+
+pub fn robust_scale(Array[Double]) -> Result[Double, DetectError]
+
+pub fn robust_z_scores(Array[Double]) -> Result[Array[Double], DetectError]
+
+pub fn roc_curve(Array[ThresholdPoint], Int) -> Result[Array[CurvePoint], DetectError]
+
+pub fn rolling_median(Array[Double], Int) -> Result[Array[Double], DetectError]
+
+pub fn sample_variance(Array[Double]) -> Result[Double, DetectError]
+
+pub fn score_boundaries(Array[Boundary], Array[Boundary], Int) -> Result[Score, DetectError]
+
+pub fn segment_boundaries(Array[SegmentSpec]) -> Array[Boundary]
+
+pub fn segment_boundaries_from_updates(Array[Update], Double, Int) -> Result[Array[Boundary], DetectError]
+
+pub fn sensitive_experiment_plan() -> ExperimentPlan
+
+pub fn sinusoid(Int, Double, Double, Double) -> Result[NumericSeries, DetectError]
+
+pub fn sorted_values(Array[Double]) -> Result[Array[Double], DetectError]
+
+pub fn stats_of(Array[Double]) -> Result[OnlineStats, DetectError]
+
+pub fn summarize(Array[Update], Double) -> Result[TraceSummary, DetectError]
+
+pub fn sweep_cusum(NumericScenario, Double, Array[Double], Array[Double], Int) -> Result[Array[BaselineExperiment], DetectError]
+
+pub fn sweep_ewma(NumericScenario, Array[Double], Array[Double], Int, Int) -> Result[Array[BaselineExperiment], DetectError]
+
+pub fn sweep_thresholds(NumericScenario, GaussianModel, Double, Int, Array[Double], Int) -> Result[Array[NumericExperiment], DetectError]
+
+pub fn theil_sen_slope(Array[Double]) -> Result[Double, DetectError]
+
+pub fn threshold_grid(Double, Double, Int) -> Result[Array[Double], DetectError]
+
+pub fn threshold_points(Array[Update], Array[Boundary], Array[Double], Int) -> Result[Array[ThresholdPoint], DetectError]
+
+pub fn trapezoid_area(Array[Double], Array[Double]) -> Result[Double, DetectError]
+
+pub fn trimmed_mean(Array[Double], Double) -> Result[Double, DetectError]
+
+pub fn uniform_noise(Int, Double, Double, Int) -> Result[Array[Double], DetectError]
+
+pub fn update_csv_header() -> String
+
+pub fn update_csv_row(Update) -> String
+
+pub fn validate_audit(SeriesAudit) -> Result[Unit, DetectError]
+
+pub fn validate_scenario(NumericScenario) -> Result[Unit, DetectError]
+
+pub fn winsorize(Array[Double], Double, Double) -> Result[Array[Double], DetectError]
+
+pub fn z_score(Double, Double, Double) -> Result[Double, DetectError]
+
+// Errors
+
+// Types and methods
+pub struct BaselineExperiment {
+  detector : String
+  scenario : String
+  threshold : Double
+  score : Score
+  alerts : Int
+}
+pub fn BaselineExperiment::f1(Self) -> Double
+pub fn BaselineExperiment::precision(Self) -> Double
+pub fn BaselineExperiment::recall(Self) -> Double
+
+pub struct Boundary {
+  step : Int
+}
+pub fn Boundary::new(Int) -> Result[Self, DetectError]
+
+pub struct BoundaryDelay {
+  truth_step : Int
+  predicted_step : Int?
+  delay : Int?
+}
+
+pub struct ChangeEvent {
+  step : Int
+  observation : Double
+  probability : Double
+  prior_run_length : Int
+}
+pub fn ChangeEvent::probability(Self) -> Double
+pub fn ChangeEvent::step(Self) -> Int
+
+pub struct ComparisonRow {
+  detector : DetectorKind
+  score : Score
+  alert_count : Int
+}
+pub fn ComparisonRow::f1(Self) -> Double
+
+pub struct Config {
+  hazard : Double
+  max_run_length : Int
+  model : GaussianModel
+}
+pub fn Config::new(Double, Int, GaussianModel) -> Result[Self, DetectError]
+
+pub struct CountExperiment {
+  scenario : String
+  threshold : Double
+  score : Score
+  maximum_probability : Double
+}
+
+pub struct CountScenario {
+  name : String
+  values : Array[Int]
+  boundaries : Array[Boundary]
+}
+pub fn CountScenario::rate_shift() -> Self
+
+pub struct CountUpdate {
+  step : Int
+  count : Int
+  change_probability : Double
+  most_likely_run_length : Int
+  posterior_rate : Double
+}
+pub fn CountUpdate::change_probability(Self) -> Double
+pub fn CountUpdate::most_likely_run_length(Self) -> Int
+pub fn CountUpdate::posterior_rate(Self) -> Double
+pub fn CountUpdate::step(Self) -> Int
+
+pub struct CurvePoint {
+  threshold : Double
+  recall : Double
+  precision : Double
+  false_positive_rate : Double
+}
+
+pub struct CusumConfig {
+  reference_mean : Double
+  slack : Double
+  threshold : Double
+}
+pub fn CusumConfig::new(Double, Double, Double) -> Result[Self, DetectError]
+
+pub struct CusumDetector {
+  config : CusumConfig
+  mut positive : Double
+  mut negative : Double
+  mut step : Int
+}
+pub fn CusumDetector::new(CusumConfig) -> Self
+pub fn CusumDetector::update(Self, Double) -> Result[CusumUpdate, DetectError]
+
+pub struct CusumUpdate {
+  step : Int
+  positive : Double
+  negative : Double
+  drift : Bool
+}
+
+pub enum DetectError {
+  InvalidHazard
+  InvalidVariance
+  InvalidPriorStrength
+  InvalidRunLengthLimit
+  NonFiniteObservation
+}
+
+pub struct DetectedSegment {
+  start_step : Int
+  end_step : Int
+  size : Int
+  mean_observation : Double
+  mean_change_probability : Double
+}
+
+pub struct Detector {
+  config : Config
+  mut step : Int
+  mut log_posterior : Array[Double]
+  mut counts : Array[Int]
+  mut sums : Array[Double]
+}
+pub fn Detector::new(Config) -> Self
+pub fn Detector::replay(Self, Array[Double]) -> Result[Array[Update], DetectError]
+pub fn Detector::restore(Self, Snapshot) -> Unit
+pub fn Detector::run_length_posterior(Self) -> Array[Double]
+pub fn Detector::snapshot(Self) -> Snapshot
+pub fn Detector::steps(Self) -> Int
+pub fn Detector::update(Self, Double) -> Result[Update, DetectError]
+
+pub enum DetectorKind {
+  Bocpd
+  Ewma
+  Cusum
+}
+pub fn DetectorKind::label(Self) -> String
+
+pub struct EventGate {
+  policy : EventPolicy
+  mut last_emitted_step : Int
+}
+pub fn EventGate::new(EventPolicy) -> Self
+pub fn EventGate::observe(Self, Update) -> ChangeEvent?
+pub fn EventGate::reset(Self) -> Unit
+
+pub struct EventPolicy {
+  probability_threshold : Double
+  minimum_run_length : Int
+  cooldown : Int
+}
+pub fn EventPolicy::new(Double, Int, Int) -> Result[Self, DetectError]
+
+pub struct EwmaConfig {
+  alpha : Double
+  z_threshold : Double
+  warmup : Int
+}
+pub fn EwmaConfig::new(Double, Double, Int) -> Result[Self, DetectError]
+
+pub struct EwmaDetector {
+  config : EwmaConfig
+  mut step : Int
+  mut mean : Double
+  mut variance : Double
+  mut initialized : Bool
+}
+pub fn EwmaDetector::new(EwmaConfig) -> Self
+pub fn EwmaDetector::replay(Self, Array[Double]) -> Result[Array[EwmaUpdate], DetectError]
+pub fn EwmaDetector::update(Self, Double) -> Result[EwmaUpdate, DetectError]
+
+pub struct EwmaUpdate {
+  step : Int
+  value : Double
+  mean : Double
+  variance : Double
+  z : Double
+  drift : Bool
+}
+
+pub struct ExperimentPlan {
+  name : String
+  hazard : Double
+  max_run_length : Int
+  threshold : Double
+  tolerance : Int
+  seed : Int
+}
+pub fn ExperimentPlan::describe(Self) -> String
+pub fn ExperimentPlan::new(String, Double, Int, Double, Int, Int) -> Result[Self, DetectError]
+
+pub struct GaussianModel {
+  prior_mean : Double
+  prior_strength : Double
+  observation_variance : Double
+}
+pub fn GaussianModel::new(Double, Double, Double) -> Result[Self, DetectError]
+
+pub struct HazardPoint {
+  hazard : Double
+  best_threshold : Double
+  best_score : Score
+  maximum_probability : Double
+}
+pub fn HazardPoint::f1(Self) -> Double
+
+pub struct NumericExperiment {
+  scenario : String
+  hazard : Double
+  threshold : Double
+  score : Score
+  trace : TraceSummary
+}
+pub fn NumericExperiment::f1(Self) -> Double
+pub fn NumericExperiment::false_positives(Self) -> Int
+pub fn NumericExperiment::true_positives(Self) -> Int
+
+pub struct NumericScenario {
+  name : String
+  values : Array[Double]
+  boundaries : Array[Boundary]
+}
+pub fn NumericScenario::mean_shift() -> Self
+pub fn NumericScenario::no_change() -> Self
+pub fn NumericScenario::two_shifts() -> Self
+
+pub struct NumericSeries {
+  values : Array[Double]
+}
+pub fn NumericSeries::at(Self, Int) -> Double?
+pub fn NumericSeries::centered(Self) -> Result[Array[Double], DetectError]
+pub fn NumericSeries::cumulative_sum(Self) -> Array[Double]
+pub fn NumericSeries::difference(Self) -> Array[Double]
+pub fn NumericSeries::first(Self) -> Double
+pub fn NumericSeries::last(Self) -> Double
+pub fn NumericSeries::length(Self) -> Int
+pub fn NumericSeries::moving_means(Self, Int) -> Result[Array[Double], DetectError]
+pub fn NumericSeries::moving_ranges(Self, Int) -> Result[Array[Double], DetectError]
+pub fn NumericSeries::new(Array[Double]) -> Result[Self, DetectError]
+pub fn NumericSeries::rank_indices(Self) -> Array[Int]
+pub fn NumericSeries::split(Self, Int) -> Result[Array[Self], DetectError]
+pub fn NumericSeries::standardized(Self) -> Result[Array[Double], DetectError]
+pub fn NumericSeries::subseries(Self, Int, Int) -> Result[Self, DetectError]
+pub fn NumericSeries::values(Self) -> Array[Double]
+
+pub struct OnlineStats {
+  mut count : Int
+  mut average : Double
+  mut sum_of_squares : Double
+  mut minimum_value : Double?
+  mut maximum_value : Double?
+}
+pub fn OnlineStats::copy(Self) -> Self
+pub fn OnlineStats::count(Self) -> Int
+pub fn OnlineStats::maximum(Self) -> Double?
+pub fn OnlineStats::mean(Self) -> Double?
+pub fn OnlineStats::merge(Self, Self) -> Self
+pub fn OnlineStats::minimum(Self) -> Double?
+pub fn OnlineStats::new() -> Self
+pub fn OnlineStats::population_variance(Self) -> Double?
+pub fn OnlineStats::push(Self, Double) -> Result[Unit, DetectError]
+pub fn OnlineStats::push_all(Self, Array[Double]) -> Result[Unit, DetectError]
+pub fn OnlineStats::reset(Self) -> Unit
+pub fn OnlineStats::sample_variance(Self) -> Double?
+pub fn OnlineStats::z_score(Self, Double) -> Result[Double, DetectError]
+
+pub struct ParkMiller {
+  mut state : Int
+}
+pub fn ParkMiller::new(Int) -> Result[Self, DetectError]
+pub fn ParkMiller::next_unit(Self) -> Double
+
+pub struct PlanResult {
+  plan : ExperimentPlan
+  experiment : NumericExperiment
+  diagnostics : TraceDiagnostics
+  predictions : Array[Boundary]
+}
+pub fn PlanResult::summary(Self) -> String
+
+pub struct PoissonConfig {
+  hazard : Double
+  max_run_length : Int
+  model : PoissonModel
+}
+pub fn PoissonConfig::new(Double, Int, PoissonModel) -> Result[Self, DetectError]
+
+pub struct PoissonDetector {
+  config : PoissonConfig
+  mut step : Int
+  mut log_posterior : Array[Double]
+  mut totals : Array[Int]
+  mut observations : Array[Int]
+}
+pub fn PoissonDetector::new(PoissonConfig) -> Self
+pub fn PoissonDetector::replay(Self, Array[Int]) -> Result[Array[CountUpdate], DetectError]
+pub fn PoissonDetector::run_length_posterior(Self) -> Array[Double]
+pub fn PoissonDetector::steps(Self) -> Int
+pub fn PoissonDetector::update(Self, Int) -> Result[CountUpdate, DetectError]
+
+pub struct PoissonModel {
+  prior_shape : Double
+  prior_rate : Double
+}
+pub fn PoissonModel::new(Double, Double) -> Result[Self, DetectError]
+
+pub struct ProbabilityHistogram {
+  edges : Array[Double]
+  counts : Array[Int]
+}
+pub fn ProbabilityHistogram::counts(Self) -> Array[Int]
+pub fn ProbabilityHistogram::edges(Self) -> Array[Double]
+pub fn ProbabilityHistogram::total(Self) -> Int
+
+pub struct Quality {
+  values : Int
+  non_finite : Int
+  minimum : Double?
+  maximum : Double?
+  monotonic_increasing : Bool
+}
+
+pub struct ReproducibilityRecord {
+  project : String
+  scenario : String
+  observation_count : Int
+  boundary_count : Int
+  plan : String
+}
+pub fn ReproducibilityRecord::to_csv(Self) -> String
+
+pub struct RunLengthAudit {
+  observed_steps : Int
+  retained_states : Int
+  truncation_ratio : Double
+}
+
+pub struct RunningMoments {
+  mut count : Int
+  mut mean_value : Double
+  mut m2 : Double
+  mut m3 : Double
+  mut m4 : Double
+}
+pub fn RunningMoments::excess_kurtosis(Self) -> Double?
+pub fn RunningMoments::new() -> Self
+pub fn RunningMoments::push(Self, Double) -> Result[Unit, DetectError]
+pub fn RunningMoments::skewness(Self) -> Double?
+
+pub struct Score {
+  true_positives : Int
+  false_positives : Int
+  false_negatives : Int
+  mean_delay : Double
+}
+pub fn Score::f1(Self) -> Double
+pub fn Score::precision(Self) -> Double
+pub fn Score::recall(Self) -> Double
+
+pub struct SegmentSpec {
+  length : Int
+  level : Double
+}
+pub fn SegmentSpec::new(Int, Double) -> Result[Self, DetectError]
+
+pub struct SeriesAudit {
+  length : Int
+  finite_values : Int
+  non_finite_values : Int
+  repeated_adjacent_values : Int
+  increasing_steps : Int
+  decreasing_steps : Int
+  zero_steps : Int
+  minimum : Double?
+  maximum : Double?
+}
+pub fn SeriesAudit::is_constant(Self) -> Bool
+pub fn SeriesAudit::is_usable(Self) -> Bool
+pub fn SeriesAudit::monotonic_direction(Self) -> String
+pub fn SeriesAudit::quality_score(Self) -> Int
+pub fn SeriesAudit::range(Self) -> Double?
+pub fn SeriesAudit::recommendation(Self) -> String
+pub fn SeriesAudit::summary(Self) -> String
+
+pub struct Snapshot {
+  step : Int
+  log_posterior : Array[Double]
+  counts : Array[Int]
+  sums : Array[Double]
+}
+
+pub struct ThresholdPoint {
+  threshold : Double
+  score : Score
+  alerts : Int
+}
+pub fn ThresholdPoint::f1(Self) -> Double
+pub fn ThresholdPoint::false_positive_rate(Self, Int) -> Double
+pub fn ThresholdPoint::precision(Self) -> Double
+pub fn ThresholdPoint::recall(Self) -> Double
+
+pub struct TimedSeries {
+  points : Array[TimedValue]
+}
+pub fn TimedSeries::intervals(Self) -> Array[Int]
+pub fn TimedSeries::is_regular(Self) -> Bool
+pub fn TimedSeries::new(Array[TimedValue]) -> Result[Self, DetectError]
+pub fn TimedSeries::numeric(Self) -> NumericSeries
+pub fn TimedSeries::points(Self) -> Array[TimedValue]
+pub fn TimedSeries::values(Self) -> Array[Double]
+
+pub struct TimedValue {
+  time : Int
+  value : Double
+}
+pub fn TimedValue::new(Int, Double) -> Result[Self, DetectError]
+
+pub struct TraceDiagnostics {
+  steps : Int
+  mean_change_probability : Double
+  maximum_change_probability : Double
+  maximum_change_step : Int
+  shortest_map_run_length : Int
+  longest_map_run_length : Int
+  mean_posterior_mean : Double
+}
+pub fn TraceDiagnostics::is_spiky(Self, Double) -> Result[Bool, DetectError]
+pub fn TraceDiagnostics::probability_ratio(Self) -> Double
+
+pub struct TraceSummary {
+  points : Int
+  event_count : Int
+  mean_change_probability : Double
+  maximum_change_probability : Double
+  maximum_step : Int
+  final_run_length : Int
+}
+pub fn TraceSummary::event_count(Self) -> Int
+pub fn TraceSummary::maximum_change_probability(Self) -> Double
+pub fn TraceSummary::maximum_step(Self) -> Int
+pub fn TraceSummary::points(Self) -> Int
+
+pub struct Update {
+  step : Int
+  observation : Double
+  change_probability : Double
+  most_likely_run_length : Int
+  posterior_mean : Double
+  retained_run_lengths : Int
+}
+pub fn Update::change_probability(Self) -> Double
+pub fn Update::most_likely_run_length(Self) -> Int
+pub fn Update::step(Self) -> Int
+
+pub struct Window {
+  capacity : Int
+  mut values : Array[Double]
+  mut sum : Double
+  mut sum_squares : Double
+}
+pub fn Window::clear(Self) -> Unit
+pub fn Window::is_full(Self) -> Bool
+pub fn Window::length(Self) -> Int
+pub fn Window::maximum(Self) -> Double?
+pub fn Window::mean(Self) -> Double?
+pub fn Window::minimum(Self) -> Double?
+pub fn Window::new(Int) -> Result[Self, DetectError]
+pub fn Window::push(Self, Double) -> Result[Unit, DetectError]
+pub fn Window::values(Self) -> Array[Double]
+pub fn Window::variance(Self) -> Double?
+
+// Type aliases
+
+// Traits
