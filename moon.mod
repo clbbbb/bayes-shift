@@ -9,13 +9,13 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "local/bayes-shift"
+name = "clbbbb/bayes-shift"
 
 version = "0.1.0"
 
 readme = "README.mbt.md"
 
-repository = ""
+repository = "https://github.com/clbbbb/bayes-shift"
 
 license = "Apache-2.0"
 

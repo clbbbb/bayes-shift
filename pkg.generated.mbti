@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "local/bayes-shift"
+package "clbbbb/bayes-shift"
 
 // Values
 pub fn add_normal_noise(NumericSeries, Double, Int) -> Result[NumericSeries, DetectError]
