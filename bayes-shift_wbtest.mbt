@@ -1,0 +1,197 @@
+///|
+test "configuration rejects unsafe values" {
+  let model = GaussianModel::new(0.0, 1.0, 1.0).unwrap()
+  assert_true(Config::new(0.0, 32, model) is Err(InvalidHazard))
+  assert_true(Config::new(0.1, 1, model) is Err(InvalidRunLengthLimit))
+}
+
+///|
+test "posterior remains normalized" {
+  let model = GaussianModel::new(0.0, 1.0, 1.0).unwrap()
+  let detector = Detector::new(Config::new(0.05, 32, model).unwrap())
+  let _ = detector.replay([0.1, -0.2, 0.0, 0.3]).unwrap()
+  let mut total = 0.0
+  for probability in detector.run_length_posterior() {
+    total = total + probability
+  }
+  assert_true(total > 0.999999999 && total < 1.000000001)
+}
+
+///|
+test "a large shift favors a short run" {
+  let model = GaussianModel::new(0.0, 1.0, 0.05).unwrap()
+  let detector = Detector::new(Config::new(0.1, 64, model).unwrap())
+  let _ = detector.replay([0.0, 0.1, -0.1, 0.0]).unwrap()
+  let update = detector.update(8.0).unwrap()
+  assert_true(update.most_likely_run_length <= 1)
+}
+
+///|
+test "snapshot restores an exact continuation" {
+  let model = GaussianModel::new(0.0, 1.0, 1.0).unwrap()
+  let detector = Detector::new(Config::new(0.05, 32, model).unwrap())
+  let _ = detector.replay([0.2, 0.3, -0.1]).unwrap()
+  let snapshot = detector.snapshot()
+  let first = detector.update(0.4).unwrap()
+  detector.restore(snapshot)
+  let second = detector.update(0.4).unwrap()
+  assert_eq(first.most_likely_run_length, second.most_likely_run_length)
+}
+
+///|
+test "event gate emits a single high-confidence change" {
+  let model = GaussianModel::new(0.0, 1.0, 0.05).unwrap()
+  let detector = Detector::new(Config::new(0.1, 64, model).unwrap())
+  let gate = EventGate::new(EventPolicy::new(0.9, 1, 3).unwrap())
+  let _ = detector.replay([0.0, 0.1, -0.1]).unwrap()
+  assert_true(gate.observe(detector.update(8.0).unwrap()) is Some(_))
+}
+
+///|
+test "synthetic fixture is deterministic and summary finds its boundary" {
+  let values = piecewise_constant([5, 5], [0.0, 7.0], 0.1, 42).unwrap()
+  let repeat = piecewise_constant([5, 5], [0.0, 7.0], 0.1, 42).unwrap()
+  assert_eq(values, repeat)
+  let model = GaussianModel::new(0.0, 1.0, 0.05).unwrap()
+  let detector = Detector::new(Config::new(0.05, 32, model).unwrap())
+  let summary = summarize(detector.replay(values).unwrap(), 0.8).unwrap()
+  assert_true(summary.maximum_change_probability > 0.8)
+  assert_true(summary.maximum_step >= 6)
+}
+
+///|
+test "boundary scoring uses each prediction at most once" {
+  let truth = [Boundary::new(10).unwrap(), Boundary::new(20).unwrap()]
+  let predicted = [
+    Boundary::new(9).unwrap(),
+    Boundary::new(11).unwrap(),
+    Boundary::new(25).unwrap(),
+  ]
+  let score = score_boundaries(truth, predicted, 2).unwrap()
+  assert_eq(score.true_positives, 1)
+  assert_eq(score.false_positives, 2)
+  assert_eq(score.false_negatives, 1)
+}
+
+///|
+test "poisson detector recognizes a count-rate jump" {
+  let model = PoissonModel::new(1.0, 1.0).unwrap()
+  let detector = PoissonDetector::new(
+    PoissonConfig::new(0.05, 64, model).unwrap(),
+  )
+  let _ = detector.replay([1, 0, 2, 1, 1]).unwrap()
+  let update = detector.update(30).unwrap()
+  assert_true(update.change_probability > 0.8)
+  assert_true(update.most_likely_run_length <= 1)
+}
+
+///|
+test "numeric scenario sweep scores the known mean shift" {
+  let model = GaussianModel::new(0.0, 1.0, 0.05).unwrap()
+  let results = sweep_thresholds(
+    NumericScenario::mean_shift(),
+    model,
+    0.05,
+    64,
+    [0.5, 0.8, 0.95],
+    3,
+  ).unwrap()
+  assert_true(results[0].f1() > 0.5)
+}
+
+///|
+test "count experiment locates its known rate boundary" {
+  let result = evaluate_count(
+    CountScenario::rate_shift(),
+    PoissonModel::new(1.0, 1.0).unwrap(),
+    0.05,
+    32,
+    0.8,
+    2,
+  ).unwrap()
+  assert_true(result.score.true_positives == 1)
+}
+
+///|
+test "ewma baseline detects a sustained change" {
+  let detector = EwmaDetector::new(EwmaConfig::new(0.1, 2.0, 3).unwrap())
+  let updates = detector.replay([0.0, 0.1, -0.1, 0.0, 10.0]).unwrap()
+  assert_true(updates[4].drift)
+}
+
+///|
+test "cusum accumulates positive residuals" {
+  let detector = CusumDetector::new(CusumConfig::new(0.0, 0.2, 2.0).unwrap())
+  let _ = detector.update(1.0).unwrap()
+  let update = detector.update(1.5).unwrap()
+  assert_true(update.drift)
+}
+
+///|
+test "report helpers produce stable CSV and charts" {
+  assert_eq(
+    update_csv_header(),
+    "step,observation,change_probability,most_likely_run_length,posterior_mean,retained_run_lengths",
+  )
+  assert_eq(probability_bar(0.5, 4).unwrap(), "##..")
+  assert_eq(posterior_chart([0.5, 0.0], 2).unwrap(), "0 #.\n1 ..")
+}
+
+///|
+test "window evicts oldest values and maintains statistics" {
+  let window = Window::new(3).unwrap()
+  let _ = window.push(1.0)
+  let _ = window.push(2.0)
+  let _ = window.push(3.0)
+  let _ = window.push(4.0)
+  assert_eq(window.values(), [2.0, 3.0, 4.0])
+  assert_eq(window.mean(), Some(3.0))
+  assert_eq(window.minimum(), Some(2.0))
+  assert_eq(window.maximum(), Some(4.0))
+}
+
+///|
+test "numeric series supports deterministic rolling summaries" {
+  let series = NumericSeries::new([1.0, 2.0, 3.0, 4.0]).unwrap()
+  assert_eq(series.difference(), [1.0, 1.0, 1.0])
+  assert_eq(series.moving_means(2).unwrap(), [1.5, 2.5, 3.5])
+  assert_eq(series.subseries(1, 3).unwrap().values(), [2.0, 3.0])
+}
+
+///|
+test "robust statistics resist a single large spike" {
+  let values = [1.0, 1.0, 1.0, 1.0, 100.0]
+  assert_eq(median(values).unwrap(), 1.0)
+  assert_eq(median_absolute_deviation(values).unwrap(), 0.0)
+  assert_true(trimmed_mean(values, 0.2).unwrap() < 2.0)
+}
+
+///|
+test "threshold calibration picks a usable mean-shift point" {
+  let scenario = NumericScenario::mean_shift()
+  let detector = Detector::new(
+    Config::new(0.05, 64, GaussianModel::new(0.0, 1.0, 0.05).unwrap()).unwrap(),
+  )
+  let updates = detector.replay(scenario.values).unwrap()
+  let points = threshold_points(
+    updates,
+    scenario.boundaries,
+    [0.5, 0.8, 0.95],
+    3,
+  ).unwrap()
+  assert_true(best_f1_point(points).unwrap().f1() > 0.5)
+}
+
+///|
+test "protocol output records diagnostics and audit catches constants" {
+  let scenario = NumericScenario::mean_shift()
+  let result = execute_plan(
+    default_experiment_plan(),
+    scenario,
+    GaussianModel::new(0.0, 1.0, 0.05).unwrap(),
+  ).unwrap()
+  assert_true(result.diagnostics.maximum_change_probability > 0.8)
+  let audit = audit_series([2.0, 2.0, 2.0])
+  assert_true(audit.is_constant())
+  assert_eq(audit.quality_score(), 70)
+}
