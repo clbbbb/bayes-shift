@@ -18,6 +18,27 @@ test "posterior remains normalized" {
 }
 
 ///|
+test "bounded posterior remains normalized after reaching its limit" {
+  let model = GaussianModel::new(0.0, 1.0, 1.0).unwrap()
+  let detector = Detector::new(Config::new(0.05, 4, model).unwrap())
+  let _ = detector.replay([0.0, 0.1, -0.1, 0.0, 0.2, -0.2, 0.1]).unwrap()
+  assert_eq(detector.run_length_posterior().length(), 4)
+  let mut total = 0.0
+  for probability in detector.run_length_posterior() {
+    total = total + probability
+  }
+  assert_true(total > 0.999999999 && total < 1.000000001)
+}
+
+///|
+test "Gaussian detector rejects non-finite observations without advancing" {
+  let model = GaussianModel::new(0.0, 1.0, 1.0).unwrap()
+  let detector = Detector::new(Config::new(0.05, 8, model).unwrap())
+  assert_true(detector.update(1.0 / 0.0) is Err(NonFiniteObservation))
+  assert_eq(detector.steps(), 0)
+}
+
+///|
 test "a large shift favors a short run" {
   let model = GaussianModel::new(0.0, 1.0, 0.05).unwrap()
   let detector = Detector::new(Config::new(0.1, 64, model).unwrap())
@@ -83,6 +104,22 @@ test "poisson detector recognizes a count-rate jump" {
   let update = detector.update(30).unwrap()
   assert_true(update.change_probability > 0.8)
   assert_true(update.most_likely_run_length <= 1)
+}
+
+///|
+test "Poisson detector keeps a normalized bounded posterior" {
+  let detector = PoissonDetector::new(
+    PoissonConfig::new(0.05, 4, PoissonModel::new(1.0, 1.0).unwrap()).unwrap(),
+  )
+  assert_true(detector.update(-1) is Err(InvalidRunLengthLimit))
+  let _ = detector.replay([0, 1, 2, 0, 3, 1]).unwrap()
+  assert_eq(detector.steps(), 6)
+  assert_eq(detector.run_length_posterior().length(), 4)
+  let mut total = 0.0
+  for probability in detector.run_length_posterior() {
+    total = total + probability
+  }
+  assert_true(total > 0.999999999 && total < 1.000000001)
 }
 
 ///|

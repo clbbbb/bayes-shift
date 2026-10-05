@@ -18,3 +18,4 @@ jobs:
       - run: moon check --deny-warn
       - run: moon build --target wasm --deny-warn
       - run: moon test --deny-warn
+      - run: moon bench --release --deny-warn
