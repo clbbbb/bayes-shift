@@ -23,6 +23,8 @@ pub fn PoissonModel::new(
 /// Bounded BOCPD configuration for non-negative integer observations.
 pub struct PoissonConfig {
   hazard : Double
+  hazard_log : Double
+  survival_log : Double
   max_run_length : Int
   model : PoissonModel
 }
@@ -39,7 +41,13 @@ pub fn PoissonConfig::new(
   if max_run_length < 2 {
     return Err(InvalidRunLengthLimit)
   }
-  Ok({ hazard, max_run_length, model, })
+  Ok({
+    hazard,
+    hazard_log: @math.ln(hazard),
+    survival_log: @math.ln(1.0 - hazard),
+    max_run_length,
+    model,
+  })
 }
 
 ///|
@@ -106,6 +114,7 @@ fn PoissonDetector::predictive(
   total : Int,
   observations : Int,
   value : Int,
+  value_log_factorial : Double,
 ) -> Double {
   let model = self.config.model
   let shape = model.prior_shape + total.to_double()
@@ -119,13 +128,9 @@ fn PoissonDetector::predictive(
     Ok(result) => result
     Err(_) => negative_infinity
   }
-  let factorial = match log_factorial(value) {
-    Ok(result) => result
-    Err(_) => negative_infinity
-  }
   numerator -
   denominator -
-  factorial +
+  value_log_factorial +
   shape * @math.ln(rate / next_rate) +
   value.to_double() * @math.ln(1.0 / next_rate)
 }
@@ -148,22 +153,25 @@ pub fn PoissonDetector::update(
   let next_log = Array::make(new_size, negative_infinity)
   let next_totals = Array::make(new_size, 0)
   let next_observations = Array::make(new_size, 0)
-  let reset_predictive = self.predictive(0, 0, value)
-  let mut changed = negative_infinity
+  let value_log_factorial = match log_factorial(value) {
+    Ok(result) => result
+    Err(error) => return Err(error)
+  }
+  let reset_predictive = self.predictive(0, 0, value, value_log_factorial)
+  // The posterior is normalized after every update, so this is the full
+  // reset branch without repeatedly reducing the same probability mass.
+  let changed = self.config.hazard_log + reset_predictive
   for run in 0..<old_size {
-    changed = log_add(
-      changed,
-      self.log_posterior[run] + @math.ln(self.config.hazard) + reset_predictive,
-    )
     let grown = run + 1
     if grown < new_size {
       let predictive = self.predictive(
         self.totals[run],
         self.observations[run],
         value,
+        value_log_factorial,
       )
       next_log[grown] = self.log_posterior[run] +
-        @math.ln(1.0 - self.config.hazard) +
+        self.config.survival_log +
         predictive
       next_totals[grown] = self.totals[run] + value
       next_observations[grown] = self.observations[run] + 1

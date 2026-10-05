@@ -249,6 +249,8 @@ pub fn ComparisonRow::f1(Self) -> Double
 
 pub struct Config {
   hazard : Double
+  hazard_log : Double
+  survival_log : Double
   max_run_length : Int
   model : GaussianModel
 }
@@ -492,6 +494,8 @@ pub fn PlanResult::summary(Self) -> String
 
 pub struct PoissonConfig {
   hazard : Double
+  hazard_log : Double
+  survival_log : Double
   max_run_length : Int
   model : PoissonModel
 }

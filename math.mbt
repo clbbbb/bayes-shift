@@ -7,19 +7,6 @@ fn finite(value : Double) -> Bool {
 let negative_infinity : Double = -1.0 / 0.0
 
 ///|
-fn log_add(left : Double, right : Double) -> Double {
-  if left == negative_infinity {
-    return right
-  }
-  if right == negative_infinity {
-    return left
-  }
-  let high = if left > right { left } else { right }
-  let low = if left > right { right } else { left }
-  high + @math.ln(1.0 + @math.exp(low - high))
-}
-
-///|
 fn normalize_log_weights(weights : Array[Double]) -> Unit {
   let mut maximum = negative_infinity
   for value in weights {

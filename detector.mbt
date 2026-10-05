@@ -74,22 +74,20 @@ pub fn Detector::update(
   let next_log = Array::make(new_size, negative_infinity)
   let next_counts = Array::make(new_size, 0)
   let next_sums = Array::make(new_size, 0.0)
-  let mut changed = negative_infinity
   let reset_predictive = self.predictive(0, 0.0, observation)
+  // The previous run-length posterior is normalized, so reset mass is
+  // hazard times prior predictive without a per-state log-sum-exp reduction.
+  let changed = self.config.hazard_log + reset_predictive
   for run in 0..<old_size {
     let predictive = self.predictive(
       self.counts[run],
       self.sums[run],
       observation,
     )
-    changed = log_add(
-      changed,
-      self.log_posterior[run] + @math.ln(self.config.hazard) + reset_predictive,
-    )
     let grown = run + 1
     if grown < new_size {
       next_log[grown] = self.log_posterior[run] +
-        @math.ln(1.0 - self.config.hazard) +
+        self.config.survival_log +
         predictive
       next_counts[grown] = self.counts[run] + 1
       next_sums[grown] = self.sums[run] + observation

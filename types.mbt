@@ -35,6 +35,8 @@ pub fn GaussianModel::new(
 ///|
 pub struct Config {
   hazard : Double
+  hazard_log : Double
+  survival_log : Double
   max_run_length : Int
   model : GaussianModel
 }
@@ -51,7 +53,13 @@ pub fn Config::new(
   if max_run_length < 2 {
     return Err(InvalidRunLengthLimit)
   }
-  Ok({ hazard, max_run_length, model, })
+  Ok({
+    hazard,
+    hazard_log: @math.ln(hazard),
+    survival_log: @math.ln(1.0 - hazard),
+    max_run_length,
+    model,
+  })
 }
 
 ///|
