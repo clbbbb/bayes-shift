@@ -39,6 +39,18 @@ test "Gaussian detector rejects non-finite observations without advancing" {
 }
 
 ///|
+test "first Gaussian update preserves the configured hazard posterior" {
+  let detector = Detector::new(
+    Config::new(0.17, 8, GaussianModel::new(2.0, 3.0, 0.5).unwrap()).unwrap(),
+  )
+  let update = detector.update(-4.0).unwrap()
+  assert_true(
+    update.change_probability > 0.169999999999 &&
+    update.change_probability < 0.170000000001,
+  )
+}
+
+///|
 test "a large shift favors a short run" {
   let model = GaussianModel::new(0.0, 1.0, 0.05).unwrap()
   let detector = Detector::new(Config::new(0.1, 64, model).unwrap())
@@ -120,6 +132,19 @@ test "Poisson detector keeps a normalized bounded posterior" {
     total = total + probability
   }
   assert_true(total > 0.999999999 && total < 1.000000001)
+}
+
+///|
+test "first Poisson update matches the conjugate posterior rate" {
+  let detector = PoissonDetector::new(
+    PoissonConfig::new(0.2, 8, PoissonModel::new(2.0, 1.0).unwrap()).unwrap(),
+  )
+  let update = detector.update(3).unwrap()
+  assert_true(
+    update.change_probability > 0.199999999999 &&
+    update.change_probability < 0.200000000001,
+  )
+  assert_eq(update.posterior_rate, 2.5)
 }
 
 ///|
