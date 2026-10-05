@@ -180,13 +180,7 @@ pub fn PoissonDetector::update(
   next_log[0] = changed
   next_totals[0] = value
   next_observations[0] = 1
-  normalize_log_weights(next_log)
-  let mut best = 0
-  for index in 1..<new_size {
-    if next_log[index] > next_log[best] {
-      best = index
-    }
-  }
+  let best = normalize_log_weights(next_log)
   let model = self.config.model
   let rate = (model.prior_shape + next_totals[best].to_double()) /
     (model.prior_rate + next_observations[best].to_double())

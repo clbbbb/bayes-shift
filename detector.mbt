@@ -96,13 +96,7 @@ pub fn Detector::update(
   next_log[0] = changed
   next_counts[0] = 1
   next_sums[0] = observation
-  normalize_log_weights(next_log)
-  let mut best = 0
-  for index in 1..<new_size {
-    if next_log[index] > next_log[best] {
-      best = index
-    }
-  }
+  let best = normalize_log_weights(next_log)
   let model = self.config.model
   let mean = (model.prior_strength * model.prior_mean + next_sums[best]) /
     (model.prior_strength + next_counts[best].to_double())

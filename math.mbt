@@ -7,11 +7,13 @@ fn finite(value : Double) -> Bool {
 let negative_infinity : Double = -1.0 / 0.0
 
 ///|
-fn normalize_log_weights(weights : Array[Double]) -> Unit {
+fn normalize_log_weights(weights : Array[Double]) -> Int {
   let mut maximum = negative_infinity
-  for value in weights {
-    if value > maximum {
-      maximum = value
+  let mut maximum_index = 0
+  for index in 0..<weights.length() {
+    if weights[index] > maximum {
+      maximum = weights[index]
+      maximum_index = index
     }
   }
   let mut total = 0.0
@@ -24,6 +26,7 @@ fn normalize_log_weights(weights : Array[Double]) -> Unit {
   for index in 0..<weights.length() {
     weights[index] = weights[index] - evidence
   }
+  maximum_index
 }
 
 ///|
