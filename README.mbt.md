@@ -83,3 +83,5 @@ println(result.summary())
 
 - Adams, R. P. and MacKay, D. J. C. (2007), *Bayesian Online Changepoint Detection*.
 - 许可证：Apache-2.0，详见 [LICENSE](LICENSE)。
+
+完整递推、观测模型、数值稳定策略、截断近似和性能测量方式见 [算法说明](docs/ALGORITHM.md)。
