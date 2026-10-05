@@ -1,4 +1,54 @@
 ///|
+/// Direct BOCPD recurrence used only as a small correctness oracle. Unlike the
+/// production detector, it explicitly sums every reset branch.
+fn reference_gaussian_posterior(
+  observations : Array[Double],
+  config : Config,
+) -> Array[Double] {
+  let mut log_posterior : Array[Double] = [0.0]
+  let mut counts : Array[Int] = [0]
+  let mut sums : Array[Double] = [0.0]
+  for observation in observations {
+    let old_size = log_posterior.length()
+    let next_log = Array::make(old_size + 1, negative_infinity)
+    let next_counts = Array::make(old_size + 1, 0)
+    let next_sums = Array::make(old_size + 1, 0.0)
+    let reset_terms : Array[Double] = []
+    for run in 0..<old_size {
+      let model = config.model
+      let effective = model.prior_strength + counts[run].to_double()
+      let mean = (model.prior_strength * model.prior_mean + sums[run]) /
+        effective
+      let predictive = normal_log_density(
+        observation,
+        mean,
+        model.observation_variance * (1.0 + 1.0 / effective),
+      )
+      let prior_predictive = normal_log_density(
+        observation,
+        model.prior_mean,
+        model.observation_variance * (1.0 + 1.0 / model.prior_strength),
+      )
+      reset_terms.push(
+        log_posterior[run] + config.hazard_log + prior_predictive,
+      )
+      let grown = run + 1
+      next_log[grown] = log_posterior[run] + config.survival_log + predictive
+      next_counts[grown] = counts[run] + 1
+      next_sums[grown] = sums[run] + observation
+    }
+    next_log[0] = log_sum_exp(reset_terms).unwrap()
+    next_counts[0] = 1
+    next_sums[0] = observation
+    let _ = normalize_log_weights(next_log)
+    log_posterior = next_log
+    counts = next_counts
+    sums = next_sums
+  }
+  log_posterior.map(fn(value) { @math.exp(value) })
+}
+
+///|
 test "configuration rejects unsafe values" {
   let model = GaussianModel::new(0.0, 1.0, 1.0).unwrap()
   assert_true(Config::new(0.0, 32, model) is Err(InvalidHazard))
@@ -56,6 +106,25 @@ test "first Gaussian update preserves the configured hazard posterior" {
     update.change_probability > 0.169999999999 &&
     update.change_probability < 0.170000000001,
   )
+}
+
+///|
+test "Gaussian detector matches the direct BOCPD recurrence" {
+  let config = Config::new(
+    0.13,
+    16,
+    GaussianModel::new(0.5, 2.0, 0.75).unwrap(),
+  ).unwrap()
+  let observations = [-0.3, 0.2, 0.1, 2.4, 2.1]
+  let expected = reference_gaussian_posterior(observations, config)
+  let detector = Detector::new(config)
+  let _ = detector.replay(observations).unwrap()
+  let actual = detector.run_length_posterior()
+  assert_eq(actual.length(), expected.length())
+  for index in 0..<actual.length() {
+    let difference = actual[index] - expected[index]
+    assert_true(difference > -0.000000000001 && difference < 0.000000000001)
+  }
 }
 
 ///|
