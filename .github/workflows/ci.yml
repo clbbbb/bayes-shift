@@ -15,6 +15,7 @@ jobs:
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - run: moon fmt --check
       - run: moon info
+      - run: git diff --exit-code
       - run: moon check --deny-warn
       - run: moon build --target wasm --deny-warn
       - run: moon test --target all --deny-warn
