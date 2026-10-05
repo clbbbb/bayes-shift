@@ -1,0 +1,5 @@
+import {
+  "clbbbb/bayes-shift" @shift,
+}
+
+pkgtype(kind: "executable")

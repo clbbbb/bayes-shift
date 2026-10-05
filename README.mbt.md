@@ -17,9 +17,11 @@ moon info
 moon check --deny-warn
 moon test --deny-warn
 moon run cmd
+moon run cmd/evaluate
 ~~~
 
 cmd 会运行一段均值突变的可执行示例，并打印每一步的变点概率和最大后验运行长度。
+cmd/evaluate 运行固定的标注场景，输出默认、保守和敏感策略的 CSV 评估结果。
 持续集成还会在 Linux 上运行 Wasm、WasmGC、JavaScript 和 Native 全目标测试。
 
 ## 性能基准

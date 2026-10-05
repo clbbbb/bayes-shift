@@ -19,4 +19,6 @@ jobs:
       - run: moon check --deny-warn
       - run: moon build --target wasm --deny-warn
       - run: moon test --target all --deny-warn
+      - run: moon run cmd
+      - run: moon run cmd/evaluate
       - run: moon bench --release --deny-warn
