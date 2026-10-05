@@ -670,7 +670,9 @@ pub fn Update::step(Self) -> Int
 
 pub struct Window {
   capacity : Int
-  mut values : Array[Double]
+  mut storage : Array[Double]
+  mut start : Int
+  mut length : Int
   mut sum : Double
   mut sum_squares : Double
 }

@@ -181,10 +181,11 @@ test "window evicts oldest values and maintains statistics" {
   let _ = window.push(2.0)
   let _ = window.push(3.0)
   let _ = window.push(4.0)
-  assert_eq(window.values(), [2.0, 3.0, 4.0])
-  assert_eq(window.mean(), Some(3.0))
-  assert_eq(window.minimum(), Some(2.0))
-  assert_eq(window.maximum(), Some(4.0))
+  let _ = window.push(5.0)
+  assert_eq(window.values(), [3.0, 4.0, 5.0])
+  assert_eq(window.mean(), Some(4.0))
+  assert_eq(window.minimum(), Some(3.0))
+  assert_eq(window.maximum(), Some(5.0))
 }
 
 ///|
