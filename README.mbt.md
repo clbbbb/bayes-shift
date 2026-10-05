@@ -20,6 +20,7 @@ moon run cmd
 ~~~
 
 cmd 会运行一段均值突变的可执行示例，并打印每一步的变点概率和最大后验运行长度。
+持续集成还会在 Linux 上运行 Wasm、WasmGC、JavaScript 和 Native 全目标测试。
 
 ## 性能基准
 

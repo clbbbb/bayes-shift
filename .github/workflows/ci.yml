@@ -8,7 +8,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install MoonBit
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
@@ -17,5 +17,5 @@ jobs:
       - run: moon info
       - run: moon check --deny-warn
       - run: moon build --target wasm --deny-warn
-      - run: moon test --deny-warn
+      - run: moon test --target all --deny-warn
       - run: moon bench --release --deny-warn
