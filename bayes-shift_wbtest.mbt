@@ -6,6 +6,14 @@ test "configuration rejects unsafe values" {
 }
 
 ///|
+test "log1mexp stays accurate near zero and across its branch point" {
+  let near_zero = log1mexp(-0.000000000001).unwrap()
+  let moderate = log1mexp(-0.5).unwrap()
+  assert_true(near_zero > -27.631021116 && near_zero < -27.631021115)
+  assert_true(moderate > -0.932752130 && moderate < -0.932752129)
+}
+
+///|
 test "posterior remains normalized" {
   let model = GaussianModel::new(0.0, 1.0, 1.0).unwrap()
   let detector = Detector::new(Config::new(0.05, 32, model).unwrap())

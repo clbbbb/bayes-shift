@@ -28,7 +28,15 @@ pub fn log1mexp(value : Double) -> Result[Double, DetectError] {
   if value < -0.6931471805599453 {
     Ok(@math.ln(1.0 - @math.exp(value)))
   } else {
-    Ok(@math.ln(-value) + @math.ln(1.0 - value / 2.0 + value * value / 6.0))
+    // 1 - exp(x) = -x * (1 + x/2! + x^2/3! + ...).
+    // Factoring out -x avoids catastrophic cancellation near zero.
+    let mut ratio = 1.0
+    let mut term = 1.0
+    for denominator in 2..<16 {
+      term = term * value / denominator.to_double()
+      ratio = ratio + term
+    }
+    Ok(@math.ln(-value) + @math.ln(ratio))
   }
 }
 
