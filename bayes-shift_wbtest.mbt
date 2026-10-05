@@ -49,6 +49,75 @@ fn reference_gaussian_posterior(
 }
 
 ///|
+fn reference_poisson_predictive(
+  total : Int,
+  observations : Int,
+  value : Int,
+  value_log_factorial : Double,
+  model : PoissonModel,
+) -> Double {
+  let shape = model.prior_shape + total.to_double()
+  let rate = model.prior_rate + observations.to_double()
+  let next_rate = rate + 1.0
+  log_gamma(shape + value.to_double()).unwrap() -
+  log_gamma(shape).unwrap() -
+  value_log_factorial +
+  shape * @math.ln(rate / next_rate) +
+  value.to_double() * @math.ln(1.0 / next_rate)
+}
+
+///|
+/// Direct Gamma-Poisson BOCPD recurrence used only as a correctness oracle.
+fn reference_poisson_posterior(
+  values : Array[Int],
+  config : PoissonConfig,
+) -> Array[Double] {
+  let mut log_posterior : Array[Double] = [0.0]
+  let mut totals : Array[Int] = [0]
+  let mut observations : Array[Int] = [0]
+  for value in values {
+    let old_size = log_posterior.length()
+    let next_log = Array::make(old_size + 1, negative_infinity)
+    let next_totals = Array::make(old_size + 1, 0)
+    let next_observations = Array::make(old_size + 1, 0)
+    let reset_terms : Array[Double] = []
+    let value_log_factorial = log_factorial(value).unwrap()
+    let prior_predictive = reference_poisson_predictive(
+      0,
+      0,
+      value,
+      value_log_factorial,
+      config.model,
+    )
+    for run in 0..<old_size {
+      reset_terms.push(
+        log_posterior[run] + config.hazard_log + prior_predictive,
+      )
+      let grown = run + 1
+      next_log[grown] = log_posterior[run] +
+        config.survival_log +
+        reference_poisson_predictive(
+          totals[run],
+          observations[run],
+          value,
+          value_log_factorial,
+          config.model,
+        )
+      next_totals[grown] = totals[run] + value
+      next_observations[grown] = observations[run] + 1
+    }
+    next_log[0] = log_sum_exp(reset_terms).unwrap()
+    next_totals[0] = value
+    next_observations[0] = 1
+    let _ = normalize_log_weights(next_log)
+    log_posterior = next_log
+    totals = next_totals
+    observations = next_observations
+  }
+  log_posterior.map(fn(value) { @math.exp(value) })
+}
+
+///|
 test "configuration rejects unsafe values" {
   let model = GaussianModel::new(0.0, 1.0, 1.0).unwrap()
   assert_true(Config::new(0.0, 32, model) is Err(InvalidHazard))
@@ -209,6 +278,25 @@ test "Poisson detector keeps a normalized bounded posterior" {
     total = total + probability
   }
   assert_true(total > 0.999999999 && total < 1.000000001)
+}
+
+///|
+test "Poisson detector matches the direct BOCPD recurrence" {
+  let config = PoissonConfig::new(
+    0.19,
+    16,
+    PoissonModel::new(1.5, 0.75).unwrap(),
+  ).unwrap()
+  let values = [1, 0, 2, 5, 4]
+  let expected = reference_poisson_posterior(values, config)
+  let detector = PoissonDetector::new(config)
+  let _ = detector.replay(values).unwrap()
+  let actual = detector.run_length_posterior()
+  assert_eq(actual.length(), expected.length())
+  for index in 0..<actual.length() {
+    let difference = actual[index] - expected[index]
+    assert_true(difference > -0.000000000001 && difference < 0.000000000001)
+  }
 }
 
 ///|
