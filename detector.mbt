@@ -79,13 +79,13 @@ pub fn Detector::update(
   // hazard times prior predictive without a per-state log-sum-exp reduction.
   let changed = self.config.hazard_log + reset_predictive
   for run in 0..<old_size {
-    let predictive = self.predictive(
-      self.counts[run],
-      self.sums[run],
-      observation,
-    )
     let grown = run + 1
     if grown < new_size {
+      let predictive = self.predictive(
+        self.counts[run],
+        self.sums[run],
+        observation,
+      )
       next_log[grown] = self.log_posterior[run] +
         self.config.survival_log +
         predictive
